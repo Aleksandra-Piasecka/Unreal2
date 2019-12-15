@@ -3,21 +3,25 @@ This acts as the view in a MVC pattern and is responsible for all
 user interaction. For game logic see the FBullCowGame class.
 */
 
+#pragma once
 
 #include <iostream>
 #include <string>
 #include "FBullCowGame.h"
 
+// to make syntax Unreal friendly
 using FText = std::string;
 using int32 = int;
 
+//function prototypes as outside a class
 void PrintIntro();
 void PlayGame();
 FText GetValidGuess();
 bool AskToPlayAgain();
 void PrintGameSummary();
 
-FBullCowGame BCGame; //instantiate a new game
+FBullCowGame BCGame; //instantiate a new game, which we re-use across plays
+
 int main() 
 {
 	bool bPlayAgain = false;
@@ -32,16 +36,23 @@ int main()
 	return 0;
 }
 
-//introduce the game
 void PrintIntro()
 {
 
 	std::cout << "Welcome to Bulls and Cows, a fun word game. \n";
+	std::cout << std::endl;
+	std::cout << "          }   {         ___ " << std::endl;
+	std::cout << "          (o o)        (o o) " << std::endl;
+	std::cout << "   /-------\\ /          \\ /-------\\ " << std::endl;
+	std::cout << "  / | BULL |O            O| COW  | \\ " << std::endl;
+	std::cout << " *  |-,--- |              |------|  * " << std::endl;
+	std::cout << "    ^      ^              ^      ^ " << std::endl;
 	std::cout << "Can you guess the " << BCGame.GetHiddenWordLenght();
 	std::cout << " letter isogram I'm thinking of?\n";
 	return;
 }
 
+// plays a single game to completion
 void PlayGame()
 {
 	BCGame.Reset();
@@ -73,7 +84,8 @@ FText GetValidGuess()
 	{
 		//get a guess from the player
 		int32 CurrentTry = BCGame.GetCurrentTry();
-		std::cout << "Try " << CurrentTry << ". Enter your guess: ";
+		std::cout << "Try " << CurrentTry << " of " << BCGame.GetMaxTries();
+		std::cout << ". Enter your guess: ";
 		std::getline(std::cin, Guess);
 
 		// check status and give feedback
@@ -81,19 +93,18 @@ FText GetValidGuess()
 		switch (Status)
 		{
 		case EGuessStatus::Wrong_Lenght:
-			std::cout << "Please enter a a " << BCGame.GetHiddenWordLenght() << " letter word.\n";
+			std::cout << "Please enter a a " << BCGame.GetHiddenWordLenght() << " letter word.\n\n";
 			break;
 		case EGuessStatus::Not_Isogram:
-			std::cout << "Please enter a word without repeating letters.\n";
+			std::cout << "Please enter a word without repeating letters.\n\n";
 			break;
 		case EGuessStatus::Not_Lowercase:
-			std::cout << "Please enter all lowercase letters.\n";
+			std::cout << "Please enter all lowercase letters.\n\n";
 			break;
 		default:
 			//asume the guess is valid
 			break;
 		}
-		std::cout << std::endl;
 	}
 	while (Status != EGuessStatus::OK); // keep looping until we get no errors
 	return Guess;
